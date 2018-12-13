@@ -7,8 +7,8 @@ let config = require('../config/common.js');
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({port: 3000});
 
-let root = path.resolve(process.argv[2] || '.', './src');
-
+let root = path.resolve(__dirname, '../');
+console.log(root);
 let server = http.createServer(async function (request, response) {
   let pathname = url.parse(request.url).pathname;
   if (pathname === '/') {
