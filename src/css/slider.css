@@ -1,0 +1,32 @@
+.slider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.slider .minus-btn,
+.slider .plus-btn{
+  width: 20px;
+  height: 20px;
+  background-color: #ccc;
+}
+
+.slider .slider-wrapper {
+  position: relative;
+  margin: 0 10px;
+}
+
+.slider .slider-wrapper .bar {
+  height: 10px;
+  background-color: #f9c39b;
+}
+
+.slider .slider-wrapper .slider {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border: 1px solid #000;
+  background-color: #fff;
+  transform: translate(-50%, -50%);
+}

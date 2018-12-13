@@ -1,0 +1,19 @@
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgb(41, 189, 244);
+}
+
+.header .title {
+  width: 100%;
+  text-align: center;
+}
+
+.header .left-btn,
+.header .right-btn {
+  width: 30px;
+  height: 30px;
+  background-color: #ccc;
+}
+

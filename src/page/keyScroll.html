@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    * {
+      outline: none;
+    }
+    ul {
+      height: 200px;
+      overflow: scroll;
+      overflow-x: hidden;
+    }
+    li {
+      padding: 5px 0;
+    }
+    .selected {
+      background-color: #c9e387;
+    }
+
+    .square {
+      height: 300px;
+      overflow: scroll;
+      overflow-x: hidden;
+    }
+
+    .block {
+      float: left;
+      height: 80px;
+      width: 80px;
+      margin: 5px;
+      background-color: cornflowerblue;
+    }
+
+    .block.selected {
+      background-color: #fff !important;
+    }
+  </style>
+</head>
+<body>
+
+</body>
+<script>
+  function boundingDetect (element, topBounding, bottomBounding) {
+    const elementTop = element.getBoundingClientRect().top;
+    const elementBottom = element.getBoundingClientRect().bottom;
+    if (elementTop < topBounding) {
+      return elementTop - topBounding;
+    } else if (elementBottom > bottomBounding) {
+      return elementBottom - bottomBounding;
+    } else {
+      return 0;
+    }
+  }
+
+  function generateString(length) {
+    let res = '';
+    for (let i = 0; i < length; i++) {
+      res += (Math.random() * 9).toFixed(0);
+    }
+    return res;
+  }
+  function generateColor() {
+    let res = '#';
+    for (let i = 0; i < 6; i++) {
+      let num = +(Math.random() * 15).toFixed(0);
+      res = res + (num.toString(16));
+    }
+    return res;
+  }
+  let ul = document.createElement('ul');
+  ul.tabIndex = 1;
+  for (let i = 0; i < 20; i++) {
+    let li = document.createElement('li');
+    li.innerText = generateString(10);
+    li.onclick = function (e) {
+      let selected =
+      ul.getElementsByClassName('selected')[0];
+      selected && selected.classList.remove('selected');
+      li.classList.add('selected');
+    };
+    ul.appendChild(li);
+  }
+  ul.onkeydown = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    let selectedElement = ul.getElementsByClassName('selected')[0];
+    if (e.key === 'ArrowDown') {
+      selectedElement && selectedElement.nextSibling && selectedElement.classList.remove('selected');
+      selectedElement = selectedElement.nextSibling;
+    } else if (e.key === 'ArrowUp') {
+      selectedElement && selectedElement.previousSibling && selectedElement.classList.remove('selected');
+      selectedElement = selectedElement.previousSibling;
+    } else {
+      return ;
+    }
+    if (selectedElement) {
+      selectedElement.click();
+      ul.scrollTop += boundingDetect(selectedElement, ul.getBoundingClientRect().top, ul.getBoundingClientRect().bottom);
+    }
+
+
+  };
+  document.body.appendChild(ul);
+</script>
+<script>
+  let square = document.createElement('div');
+  square.tabIndex = 2;
+  square.classList.add('square');
+  for (let i = 0; i < 100; i++) {
+    let block = document.createElement('div');
+    block.classList.add('block');
+    block.style.backgroundColor = generateColor();
+    block.index = i;
+    square.appendChild(block);
+    block.onclick = function (e) {
+      let selected =
+      square.getElementsByClassName('selected')[0];
+      selected && selected.classList.remove('selected');
+      block.classList.add('selected');
+    }
+  }
+  document.body.appendChild(square);
+  let squareWidth = square.clientWidth;
+  let blockWidth = document.getElementsByClassName('block')[0].clientWidth + 10;
+  let step = Math.floor(squareWidth / blockWidth);
+  window.onresize = function () {
+    squareWidth = square.clientWidth;
+    step = Math.floor(squareWidth / blockWidth);
+    console.log(step);
+  };
+  square.onkeydown = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    let selected = square.getElementsByClassName('selected')[0];
+    if (selected) {
+      selected.classList.remove('selected');
+      let index = selected.index;
+      if (e.key === 'ArrowUp') {
+        index = selected.index - step;
+        if (index < 0) {
+          index = 0;
+        }
+      }
+      else if (e.key === 'ArrowDown') {
+        index = selected.index + step;
+        if (index > square.children.length - 1) {
+          index = square.children.length - 1;
+        }
+      } else if (e.key === 'ArrowLeft') {
+        index = selected.index - 1;
+        if (index < 0) {
+          index = 0;
+        }
+      } else if (e.key === 'ArrowRight') {
+        index = selected.index + 1;
+        if (index > square.children.length - 1) {
+          index = square.children.length - 1;
+        }
+      }
+      for (let i = 0; i < square.children.length; i++) {
+        if (index === square.children[i].index) {
+          square.children[i].classList.add('selected');
+          square.children[i].click();
+          square.scrollTop += boundingDetect(square.children[i],
+            square.getBoundingClientRect().top, square.getBoundingClientRect().bottom);
+          break;
+        }
+      }
+    }
+
+  }
+</script>
+<script type="module">
+  import {ajax} from "../util/ajax.js";
+
+  ajax('/upload', 'POST', '{a: 1}').then(data => {
+    console.log(typeof data);
+  });
+</script>
+</html>
