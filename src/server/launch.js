@@ -50,11 +50,19 @@ wss.on('connection', function (ws) {
     console.log(ws);
   });
   ws.on('message', function (message) {
-      wsClients.push({
-        client: ws,
-        name: message
+    let flag = true;
+      wsClients.forEach(item => {
+        if (item.client === ws) {
+          flag = false;
+        }
       });
-  })
+      if (flag) {
+        wsClients.push({
+          client: ws,
+          name: message
+        });
+      }
+  });
 });
 
 
