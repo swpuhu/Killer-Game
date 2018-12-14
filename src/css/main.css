@@ -85,3 +85,27 @@
 .list-name {
   flex: 1;
 }
+
+.label.prompt-label {
+  color: blue;
+  animation: promptlabel 3.5s ease;
+}
+
+@keyframes promptlabel {
+0% {
+  opacity: 0;
+  transform: translate(-50%, -50%);
+}
+20% {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+80% {
+  opacity: 1;
+  transform: translate(-50%, -50%);
+}
+100% {
+  opacity: 0;
+  transform: translate(-50%, -200%);
+}
+}

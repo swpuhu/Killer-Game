@@ -13,20 +13,11 @@ function getElement() {
   return doc;
 }
 
-function show(duration = 2000) {
+function show() {
   document.body.appendChild(doc);
-  doc.animate([
-    {opacity: 0, transform: 'translate(-50%, -50%)', offset: 0},
-    {opacity: 1, transform: 'translate(-50%, -50%)', offset: 0.2},
-    {opacity: 1, transform: 'translate(-50%, -50%)', offset: 0.8},
-    {opacity: 0, transform: 'translate(-50%, -200%)', offset: 1}
-  ], {
-    duration: duration,
-    easing: 'ease'
-  });
-  setTimeout(() => {
+  doc.addEventListener('webkitAnimationEnd', function () {
     doc.remove();
-  }, duration);
+  })
 }
 
 export default function (text) {
