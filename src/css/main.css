@@ -96,11 +96,11 @@
   opacity: 0;
   transform: translate(-50%, -50%);
 }
-20% {
+30% {
   opacity: 1;
   transform: translate(-50%, -50%);
 }
-80% {
+70% {
   opacity: 1;
   transform: translate(-50%, -50%);
 }
