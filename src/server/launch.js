@@ -2,7 +2,7 @@ let http = require('http');
 let url = require('url');
 let fs = require('fs');
 let path = require('path');
-let routes = require ('./router');
+let routes = require ('./router').routes;
 let config = require('../config/common.js');
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({port: 3000});
@@ -14,12 +14,12 @@ let server = http.createServer(async function (request, response) {
   if (pathname === '/') {
     pathname = config.index;
   }
-  console.log(pathname);
+  // console.log(pathname);
   let filepath = path.join(root, pathname);
   if (/dist/.test(pathname)) {
     filepath = path.resolve(__dirname, '../../' + pathname);
   }
-  console.log(new Date() + ' ' + filepath + ' ' + request.method);
+  // console.log(new Date() + ' ' + filepath + ' ' + request.method);
   await readFile(request, response, filepath)
     .then(() => {
   }).catch(e => {
@@ -33,7 +33,7 @@ let server = http.createServer(async function (request, response) {
 }).listen(8080);
 
 console.log('server running on: http://192.168.1.11:8080');
-console.log('webSokcet running on ws://192.168.1.11:3000');
+console.log('webSocket running on ws://192.168.1.11:3000');
 
 function noop () {
 }
@@ -43,30 +43,57 @@ function heartbeat() {
 
 let wsClients = [];
 wss.on('connection', function (ws) {
-  wsClients.push({ws, });
   ws.isAlive = true;
   ws.on('pong', heartbeat);
   ws.on('close', function () {
-    console.log(ws);
+    wsClients.forEach((item, index, arr) => {
+      if (item.name === ws.name) {
+        wsClients.splice(index, 1);
+        wss.clients.forEach(client => {
+          if (client.readyState === WebSocket.OPEN) {
+            let res = {
+              players: wsClients,
+              status: 'quit',
+              msg: ws.name
+            };
+            client.send(JSON.stringify(res));
+          }
+        });
+      }
+      // console.log(wsClients);
+    });
   });
+
   ws.on('message', function (message) {
     let flag = true;
       wsClients.forEach(item => {
-        if (item.client === ws) {
+        if (item.client === ws || item.name === message) {
           flag = false;
         }
       });
       if (flag) {
+        ws.name = message;
         wsClients.push({
-          client: ws,
           name: message
         });
       }
+
+      wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+          let res = {
+            players: wsClients,
+            status: 'join',
+            msg: message
+          };
+          client.send(JSON.stringify(res));
+        }
+      });
+
   });
 });
 
 
-const interval = setInterval(function () {
+setInterval(function () {
   wss.clients.forEach(ws => {
     if (ws.isAlive === false) {
       console.log('lose connection');

@@ -72,4 +72,5 @@ function parseBody(body) {
 }
 
 
-module.exports = routes;
+module.exports.routes = routes;
+module.exports.players = players;
