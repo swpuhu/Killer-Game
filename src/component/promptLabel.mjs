@@ -24,6 +24,10 @@ export default function (text) {
   let obj = Object.create(base);
   content.innerText = text;
 
+  function setText(text) {
+    content.innerText = text;
+  }
+
   Object.defineProperties(obj, {
     getElement: {
       value: getElement,
@@ -33,6 +37,12 @@ export default function (text) {
     },
     show: {
       value: show,
+      configurable: false,
+      writable: false,
+      enumerable: true
+    },
+    setText: {
+      value: setText,
       configurable: false,
       writable: false,
       enumerable: true
