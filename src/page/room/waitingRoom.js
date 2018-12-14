@@ -17,10 +17,7 @@ ajax(`${url}/setPlayers?name=${name}&number=${number}`, 'GET').then(data => {
   console.log(data);
 });
 
-ajax(`${url}/joinGame?name=${name}`, 'POST').then(data => {
-  let prompt = label(data.msg);
-  prompt.show(3000);
-});
+
 
 let ws = new WebSocket(wsurl);
 ws.onopen = function () {
@@ -31,12 +28,19 @@ ws.onmessage = function (data) {
   try {
     res = JSON.parse(data.data);
     console.log(res);
-    if (isArray(res)) {
+    /**
+     * data.data = {
+     *   players: Arrays
+     *   status: String
+     *   msg: name
+     * }
+     */
+    if (isArray(res.players)) {
       while(list.children.length) {
         list.firstElementChild.remove();
       }
       let count = 1;
-      for (let i of res) {
+      for (let i of res.players) {
         let li = document.createElement('li');
         addClass(li, ['player-list', 'list-item']);
         li.innerHTML = `
@@ -47,6 +51,13 @@ ws.onmessage = function (data) {
         list.appendChild(li);
       }
       document.body.appendChild(list);
+      let prompt = label('');
+      if (res.status === 'join') {
+        prompt.setText(`welcome ${res.msg} to join the game!`);
+      } else {
+        prompt.setText(`player ${res.msg} quit the game`);
+      }
+      prompt.show(3000);
     }
   } catch (e) {
     console.warn('data不是JSON字符串');
