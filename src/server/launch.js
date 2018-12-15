@@ -3,9 +3,11 @@ let url = require('url');
 let fs = require('fs');
 let path = require('path');
 let routes = require ('./router').routes;
+let info = require('./router').info;
 let config = require('../config/common.js');
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({port: 3000});
+let number = 0;
 
 let root = path.resolve(__dirname, '../');
 console.log(root);
@@ -49,12 +51,16 @@ wss.on('connection', function (ws) {
     wsClients.forEach((item, index, arr) => {
       if (item.name === ws.name) {
         wsClients.splice(index, 1);
+        console.log(wsClients);
+        number--;
         wss.clients.forEach(client => {
           if (client.readyState === WebSocket.OPEN) {
             let res = {
               players: wsClients,
               status: 'quit',
-              msg: ws.name
+              msg: ws.name,
+              isStart: false,
+              number: number
             };
             client.send(JSON.stringify(res));
           }
@@ -65,6 +71,7 @@ wss.on('connection', function (ws) {
   });
 
   ws.on('message', function (message) {
+
     let flag = true;
       wsClients.forEach(item => {
         if (item.client === ws || item.name === message) {
@@ -76,14 +83,17 @@ wss.on('connection', function (ws) {
         wsClients.push({
           name: message
         });
+        number++;
       }
-
+    console.log(info.number, number);
       wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
           let res = {
             players: wsClients,
             status: 'join',
-            msg: message
+            msg: message,
+            isStart: +number === +info.number,
+            number: number
           };
           client.send(JSON.stringify(res));
         }

@@ -3,7 +3,9 @@ const querystring = require('querystring');
 const url = require('url');
 let players = [];
 const WebSocket = require('ws');
-let number = undefined;
+let obj = {
+  number: undefined
+};
 let routes = {
   '/test': function (request, response) {
     response.writeHead(200);
@@ -14,12 +16,12 @@ let routes = {
   '/setPlayers': function (request, response, wss) {
     const params = querystring.parse(url.parse(request.url).query);
     response.writeHead(200);
-    if (number === undefined) {
-      number = params.number;
+    if (obj.number === undefined) {
+      obj.number = params.number;
       let msg = {msg: 'success'};
       response.write(JSON.stringify(msg));
     } else {
-      let msg = {msg: `人数已设置为${number}人。`};
+      let msg = {msg: `人数已设置为${obj.number}人。`};
       response.write(JSON.stringify(msg));
     }
     response.end();
@@ -74,3 +76,4 @@ function parseBody(body) {
 
 module.exports.routes = routes;
 module.exports.players = players;
+module.exports.info = obj;
